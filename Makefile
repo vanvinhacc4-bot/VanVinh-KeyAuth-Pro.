@@ -1,4 +1,4 @@
-# Xoá sạch code cũ, dán đúng đoạn này
+# Dùng lệnh export để ép toàn bộ hệ thống chỉ dùng arm64
 export ARCHS = arm64
 export TARGET = iphone:clang:latest:14.0
 
@@ -11,7 +11,7 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = VanVinhPro
 
 VanVinhPro_FILES = main.mm
-# Lệnh -force_load cực kỳ quan trọng để nhận diện Class KeyAuthSystem
+# -force_load để đảm bảo nó lấy đủ Class từ thư viện tĩnh
 VanVinhPro_LDFLAGS = -force_load libKeyAuth.a
 VanVinhPro_FRAMEWORKS = UIKit Foundation Security SystemConfiguration CoreTelephony AdSupport
 VanVinhPro_CFLAGS = -fobjc-arc -Wno-error
