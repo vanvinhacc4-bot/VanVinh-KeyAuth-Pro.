@@ -4,18 +4,19 @@
 #import "KeyAuth.h"
 
 // ==========================================
-// FIX LỖI LINKER (KHÔNG ĐƯỢC XOÁ)
+// FIX LỖI LINKER - KHAI BÁO CÁC BIẾN TOÀN CỤC
 // ==========================================
 extern "C" void __clear_cache(void *begin, void *end) {}
 
-// ĐÂY LÀ DÒNG FIX LỖI "KEYAUTH_MAX_DYLIBS" TRONG ẢNH CỦA MÀY
-extern "C" uint32_t KEYAUTH_MAX_DYLIBS = 3;
+// Ép kiểu cụ thể để thư viện tĩnh có thể tìm thấy các ký hiệu này
+extern "C" {
+    uint32_t KEYAUTH_MAX_DYLIBS = 3;
+    NSString * const KEYAUTH_APP_DISPLAY_NAME = @"VanVinh Pro Menu";
+}
 
 // ==========================================
 // CẤU HÌNH KEYAUTH (CHÍNH CHỦ VINH)
 // ==========================================
-NSString * const KEYAUTH_APP_DISPLAY_NAME = @"VanVinh Pro Menu";
-
 // Phiên bản: 1.0
 const uint8_t KEYAUTH_ENC_VERSION[] = {0x31, 0x2e, 0x30}; 
 const NSUInteger KEYAUTH_ENC_VERSION_LEN = sizeof(KEYAUTH_ENC_VERSION);
@@ -29,6 +30,7 @@ const NSUInteger KEYAUTH_ENC_APP_ID_LEN = sizeof(KEYAUTH_ENC_APP_ID);
 // ==========================================
 __attribute__((constructor)) static void init() {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        // Gọi khởi tạo hệ thống KeyAuth
         [[KeyAuthSystem shared] start];
     });
 }
