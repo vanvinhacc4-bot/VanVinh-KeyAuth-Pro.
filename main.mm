@@ -1,7 +1,15 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "KeyAuthConfig.h"
+#import "KeyAuth.h"#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import "KeyAuthConfig.h"
 #import "KeyAuth.h"
+
+// Thêm đoạn này để fix lỗi ___clear_cache
+extern "C" void __clear_cache(void *begin, void *end) {}
+
+// ... giữ nguyên các dòng code phía dưới của mày ...
 
 // Tên hiện trên menu login của mày
 NSString * const KEYAUTH_APP_DISPLAY_NAME = @"VAN VINH FF PRO";
