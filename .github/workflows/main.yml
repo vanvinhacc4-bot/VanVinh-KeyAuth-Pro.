@@ -12,24 +12,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Theos (Rút gọn)
+      - name: Setup Theos (Tốc độ cao)
         run: |
-          # Chỉ tải bộ lõi Theos, không tải submodule nặng
           git clone https://github.com/theos/theos.git /Users/runner/theos
           echo "THEOS=/Users/runner/theos" >> $GITHUB_ENV
           
-      - name: Setup SDK (Trực tiếp)
+      - name: Setup SDK (Link dự phòng)
         run: |
           mkdir -p /Users/runner/theos/sdks
-          # Dùng link này tải cực nhanh
-          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz --output SDK.tar.xz
-          tar -xf SDK.tar.xz -C /Users/runner/theos/sdks
-          rm SDK.tar.xz
+          # Tải SDK 14.5 từ nguồn khác, định dạng zip cho an toàn
+          curl -L https://github.com/theos/sdks/archive/master.zip --output sdks.zip
+          unzip -q sdks.zip -d /Users/runner/theos/sdks
+          # Di chuyển các file vào đúng vị trí
+          mv /Users/runner/theos/sdks/sdks-master/* /Users/runner/theos/sdks/
+          rm -rf sdks.zip /Users/runner/theos/sdks/sdks-master
 
       - name: Build Dylib
         run: |
           export THEOS=/Users/runner/theos
-          # Lệnh build bỏ qua kiểm tra package để tránh lỗi
+          # Lệnh build bỏ qua mọi cảnh báo để ra file
           make FINALPACKAGE=1
 
       - name: Upload Artifact
