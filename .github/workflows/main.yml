@@ -1,0 +1,35 @@
+name: VanVinh-Build-Pro
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Theos
+        run: |
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+          echo "THEOS=/Users/runner/theos" >> $GITHUB_ENV
+
+      - name: Setup SDK
+        run: |
+          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz --output SDK.tar.xz
+          tar -xf SDK.tar.xz -C /Users/runner/theos/sdks
+          rm SDK.tar.xz
+
+      - name: Build Dylib
+        run: |
+          export THEOS=/Users/runner/theos
+          make package FINALPACKAGE=1
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: VanVinh-KeyAuth-Dylib
+          path: .theos/obj/debug/*.dylib
