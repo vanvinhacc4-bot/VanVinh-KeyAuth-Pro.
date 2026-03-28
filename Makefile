@@ -23,7 +23,7 @@ VanVinhPro_FRAMEWORKS = UIKit Foundation Security CoreGraphics CoreTelephony AdS
 VanVinhPro_LDFLAGS = -force_load ./libKeyAuth.a -lsqlite3 -lz -lstdc++
 
 # Cờ biên dịch để nhận diện Objective-C++
-VanVinhPro_CFLAGS = -fobjc-arc -Wno-deprecated-declarations
+VanVinhPro_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable -Wno-error
 
 # Lệnh build Tweak
 include $(THEOS_MAKE_PATH)/tweak.mk
