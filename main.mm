@@ -1,43 +1,47 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-
-// CHỈ IMPORT HEADER, KHÔNG KHAI BÁO LẠI BIẾN TRONG MAIN
-#import "KeyAuthConfig.h" 
+#import "KeyAuthConfig.h"
 #import "KeyAuth.h"
 
-// Hàm thực thi chính
-static void LaunchKeyAuth() {
-    // Kiểm tra UIWindow - Nguyên nhân gây văng số 1 trên iOS
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIWindow *window = [UIApplication sharedApplication].keyWindow;
-        if (!window) {
-            // Nếu App chưa load xong UI, đợi tiếp 2 giây
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                LaunchKeyAuth();
-            });
-            return;
-        }
+// --- KHÔNG KHAI BÁO BIẾN EXTERN NỮA ---
+// Vì API của mày dùng cơ chế Gán (Setters) trực tiếp vào Object
 
-        // Gọi instance từ thư viện .a
-        KeyAuthSystem *auth = [KeyAuthSystem shared];
-        if (auth) {
-            [auth start];
-            NSLog(@"[Vinh] KeyAuth Started!");
+static void StartVinhMenu() {
+    // Lấy instance duy nhất
+    KeyAuthSystem *vinhAuth = [KeyAuthSystem shared];
+    
+    if (vinhAuth) {
+        // Gán thông tin (Dựa trên API mày gửi)
+        vinhAuth.name = K_NAME;
+        vinhAuth.ownerid = K_OWNER;
+        vinhAuth.secret = K_SECRET;
+        vinhAuth.version = K_VERSION;
+        
+        // Theo API mày gửi, phải gọi setup trước khi start
+        if ([vinhAuth respondsToSelector:@selector(setup)]) {
+            [vinhAuth setup];
         }
-    });
+        
+        // Hiện Menu Login
+        [vinhAuth start];
+        
+        NSLog(@"[Vinh] KeyAuth initialized and started!");
+    }
 }
 
-// Hàm khởi tạo dylib
+// Hàm khởi tạo dylib (Constructor)
 __attribute__((constructor)) static void init() {
-    // Lắng nghe sự kiện App đã load xong hoàn toàn (Launch Finished)
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification 
-                                                      object:nil 
-                                                       queue:[NSOperationQueue mainQueue] 
-                                                  usingBlock:^(NSNotification *note) {
+    // Đợi 10 giây để Game load xong UI (Chống văng UIWindow)
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-        // Delay thêm 3 giây để đảm bảo các lớp bảo mật của App/Game đã chạy xong
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            LaunchKeyAuth();
-        });
-    }];
+        // Kiểm tra xem App có Window chưa rồi mới chạy
+        if ([UIApplication sharedApplication].keyWindow) {
+            StartVinhMenu();
+        } else {
+            // Nếu chưa có, đợi thêm 5 giây nữa cho chắc
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                StartVinhMenu();
+            });
+        }
+    });
 }
