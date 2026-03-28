@@ -15,7 +15,7 @@ TWEAK_NAME = VanVinhPro
 VanVinhPro_FILES = main.mm
 
 # Các Framework hệ thống cần thiết cho KeyAuth và giao diện
-VanVinhPro_FRAMEWORKS = UIKit Foundation Security CoreGraphics CoreTelephony AdSupport
+VanVinhPro_FRAMEWORKS = UIKit Foundation Security CoreGraphics CoreTelephony AdSupport SystemConfiguration
 
 # ĐƯỜNG DẪN THƯ VIỆN VÀ CẤU HÌNH LIÊN KẾT (QUAN TRỌNG NHẤT)
 # -force_load: Ép nạp toàn bộ thư viện tĩnh để không bị lỗi "Symbol not found"
