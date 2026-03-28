@@ -1,4 +1,4 @@
-# Thiết lập kiến trúc
+# Thiết lập kiến trúc và Target
 ARCHS = arm64
 TARGET = iphone:clang:latest:14.0
 
@@ -6,11 +6,14 @@ TARGET = iphone:clang:latest:14.0
 THEOS_DEVICE_IP = localhost
 THEOS_MAKE_PATH ?= $(THEOS)/makefiles
 
-# Tên project
+# Tên Project
 TWEAK_NAME = VanVinhPro
 VanVinhPro_FILES = main.mm
 
-# LIÊN KẾT THƯ VIỆN - THÊM SystemConfiguration VÀO ĐÂY
+# --- PHẦN FIX LỖI MÀY VỪA THÊM ---
+VanVinhPro_CFLAGS = -Wno-unused-variable -Wno-unused-const-variable -fobjc-arc
+
+# --- PHẦN LIÊN KẾT THƯ VIỆN & FRAMEWORKS ---
 VanVinhPro_LDFLAGS = -force_load ./libKeyAuth.a -lsqlite3 -lz -lstdc++ -lc++ -Wl,-segalign,4000 -undefined dynamic_lookup
 VanVinhPro_FRAMEWORKS = UIKit Foundation Security QuartzCore CoreGraphics SystemConfiguration CoreTelephony AdSupport
 
