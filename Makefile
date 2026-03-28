@@ -11,14 +11,11 @@ TWEAK_NAME = VanVinhPro
 # File nguồn
 VanVinhPro_FILES = main.mm
 
-# CÁC FRAMEWORK HỆ THỐNG (THÊM ĐỦ BỘ ĐỂ FIX LỖI GIAO DIỆN)
-# Thêm QuartzCore, CoreText và WebKit để fix lỗi showKeyInfoLiquid
-VanVinhPro_FRAMEWORKS = UIKit Foundation Security CoreGraphics CoreTelephony AdSupport SystemConfiguration QuartzCore CoreText WebKit
+# CÁC FRAMEWORK HỆ THỐNG (DÀN HÀNG NGANG ĐỂ FIX LỖI GIAO DIỆN)
+VanVinhPro_FRAMEWORKS = UIKit Foundation Security CoreGraphics CoreTelephony AdSupport SystemConfiguration QuartzCore CoreText WebKit CoreFoundation
 
-# CẤU HÌNH LIÊN KẾT (CỰC KỲ QUAN TRỌNG)
-# -force_load: Ép nạp thư viện
-# -lsqlite3 -lz -lstdc++: Các thư viện nền tảng
-VanVinhPro_LDFLAGS = -force_load ./libKeyAuth.a -lsqlite3 -lz -lstdc++
+# CẤU HÌNH LIÊN KẾT (THÊM -ObjC ĐỂ ÉP NẠP CATEGORY TRONG LIB TĨNH)
+VanVinhPro_LDFLAGS = -force_load ./libKeyAuth.a -lsqlite3 -lz -lstdc++ -ObjC
 
 # CỜ BIÊN DỊCH
 VanVinhPro_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable -Wno-error
