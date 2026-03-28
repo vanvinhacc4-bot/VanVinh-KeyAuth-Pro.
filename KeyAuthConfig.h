@@ -1,17 +1,19 @@
+#ifndef KeyAuthConfig_h
+#define KeyAuthConfig_h
+
 #import <Foundation/Foundation.h>
 
-// ==========================================
-// THÔNG TIN BẢO MẬT KEYAUTH (CHÍNH CHỦ VINH)
-// ==========================================
+// Định nghĩa trực tiếp ở đây để thư viện .a đọc thẳng từ Header
+static NSString * const KEYAUTH_APP_DISPLAY_NAME = @"LE VINH MENU";
 
-// App ID của mày: FjFllxcSj2
-#define KEYAUTH_APPID @"FjFllxcSj2"
+// Version 1.0
+static const uint8_t KEYAUTH_ENC_VERSION[] = {0x31, 0x2e, 0x30};
+static const NSUInteger KEYAUTH_ENC_VERSION_LEN = 3;
 
-// App Secret: Dãy mã dài mày vừa copy
-#define KEYAUTH_SECRET @"81c6788b2918813bb0263c560f31962d6b8ae9248f9d898ae7f66f855175d68f"
+// Owner ID: fjFllxcSj2
+static const uint8_t KEYAUTH_ENC_APP_ID[] = {0x66, 0x6a, 0x46, 0x6c, 0x6c, 0x78, 0x63, 0x53, 0x6a, 0x32};
+static const NSUInteger KEYAUTH_ENC_APP_ID_LEN = 10;
 
-// Phiên bản ứng dụng (Phải khớp với trên web)
-#define KEYAUTH_VERSION @"1.0"
+static const uint32_t KEYAUTH_MAX_DYLIBS = 1;
 
-// Tên hiển thị khi thông báo
-#define KEYAUTH_NAME @"VanVinh Pro Menu"
+#endif
