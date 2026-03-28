@@ -14,7 +14,6 @@ jobs:
 
       - name: Setup Theos (Bản đầy đủ)
         run: |
-          # Tải Theos và các phụ tùng cần thiết
           git clone --recursive https://github.com/theos/theos.git /Users/runner/theos
           echo "THEOS=/Users/runner/theos" >> $GITHUB_ENV
           
@@ -26,11 +25,11 @@ jobs:
           mv /Users/runner/theos/sdks/sdks-master/* /Users/runner/theos/sdks/
           rm -rf sdks.zip /Users/runner/theos/sdks/sdks-master
 
-      - name: Build Dylib
+      - name: Build Dylib (Ép ARCHS ngoài lệnh)
         run: |
           export THEOS=/Users/runner/theos
-          # Thêm lệnh này để chắc chắn arm64e không bị lỗi
-          make FINALPACKAGE=1 ARCHS="arm64 arm64e"
+          # ĐÂY LÀ DÒNG QUYẾT ĐỊNH: Ép ARCHS ngay tại lệnh build
+          make FINALPACKAGE=1 ARCHS="arm64" TARGET="iphone:clang:latest:14.0"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
