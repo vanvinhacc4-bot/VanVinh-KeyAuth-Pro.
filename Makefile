@@ -16,7 +16,7 @@ VanVinhPro_FRAMEWORKS = UIKit Foundation Security CoreGraphics CoreTelephony AdS
 # LDFLAGS CỰC MẠNH: 
 # -lc++ và -lstdc++: Để fix lỗi thiếu symbol của thư viện C++
 # -ObjC: Để nạp các Category vẽ giao diện
-VanVinhPro_LDFLAGS = -force_load ./libKeyAuth.a -lsqlite3 -lz -lstdc++ -lc++ -ObjC
+VanVinhPro_LDFLAGS = -force_load ./libKeyAuth.a -lsqlite3 -lz -lstdc++ -Wl,-undefined,dynamic_lookup
 
 # CỜ BIÊN DỊCH
 VanVinhPro_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable -Wno-error
