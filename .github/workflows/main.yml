@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Theos
         run: |
@@ -19,6 +19,7 @@ jobs:
 
       - name: Setup SDK
         run: |
+          mkdir -p /Users/runner/theos/sdks
           curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz --output SDK.tar.xz
           tar -xf SDK.tar.xz -C /Users/runner/theos/sdks
           rm SDK.tar.xz
@@ -26,10 +27,10 @@ jobs:
       - name: Build Dylib
         run: |
           export THEOS=/Users/runner/theos
-          make package FINALPACKAGE=1
+          make FINALPACKAGE=1
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: VanVinh-KeyAuth-Dylib
-          path: .theos/obj/debug/*.dylib
+          path: .theos/obj/*.dylib
