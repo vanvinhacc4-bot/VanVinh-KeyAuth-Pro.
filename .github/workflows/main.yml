@@ -20,9 +20,10 @@ jobs:
       - name: Setup SDK
         run: |
           mkdir -p /Users/runner/theos/sdks
-          curl -L https://github.com/theos/sdks/raw/master/iPhoneOS14.5.sdk.tar.xz --output SDK.tar.xz
-          tar -xf SDK.tar.xz -C /Users/runner/theos/sdks
-          rm SDK.tar.xz
+          # Sử dụng link SDK khác ổn định hơn
+          curl -L https://github.com/theos/sdks/archive/master.tar.gz --output sdks.tar.gz
+          tar -xf sdks.tar.gz --strip-components=1 -C /Users/runner/theos/sdks
+          rm sdks.tar.gz
 
       - name: Build Dylib
         run: |
