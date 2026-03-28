@@ -12,12 +12,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Theos (Bản đầy đủ)
+      - name: Setup Theos & Ldid
         run: |
+          # Cài ldid để không bị lỗi command not found
+          brew install ldid
           git clone --recursive https://github.com/theos/theos.git /Users/runner/theos
           echo "THEOS=/Users/runner/theos" >> $GITHUB_ENV
           
-      - name: Setup SDK (Đã ổn định)
+      - name: Setup SDK
         run: |
           mkdir -p /Users/runner/theos/sdks
           curl -L https://github.com/theos/sdks/archive/master.zip --output sdks.zip
@@ -25,11 +27,11 @@ jobs:
           mv /Users/runner/theos/sdks/sdks-master/* /Users/runner/theos/sdks/
           rm -rf sdks.zip /Users/runner/theos/sdks/sdks-master
 
-      - name: Build Dylib (Ép ARCHS ngoài lệnh)
+      - name: Build Dylib
         run: |
           export THEOS=/Users/runner/theos
-          # ĐÂY LÀ DÒNG QUYẾT ĐỊNH: Ép ARCHS ngay tại lệnh build
-          make FINALPACKAGE=1 ARCHS="arm64" TARGET="iphone:clang:latest:14.0"
+          # Thêm NO_CODESIGN=1 để nó không đòi ldid nữa
+          make FINALPACKAGE=1 ARCHS="arm64" TARGET="iphone:clang:latest:14.0" NO_CODESIGN=1
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
