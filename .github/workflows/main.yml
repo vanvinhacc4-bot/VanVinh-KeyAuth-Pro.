@@ -12,26 +12,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Theos (Tốc độ cao)
+      - name: Setup Theos (Bản đầy đủ)
         run: |
-          git clone https://github.com/theos/theos.git /Users/runner/theos
+          # Tải Theos và các phụ tùng cần thiết
+          git clone --recursive https://github.com/theos/theos.git /Users/runner/theos
           echo "THEOS=/Users/runner/theos" >> $GITHUB_ENV
           
-      - name: Setup SDK (Link dự phòng)
+      - name: Setup SDK (Đã ổn định)
         run: |
           mkdir -p /Users/runner/theos/sdks
-          # Tải SDK 14.5 từ nguồn khác, định dạng zip cho an toàn
           curl -L https://github.com/theos/sdks/archive/master.zip --output sdks.zip
           unzip -q sdks.zip -d /Users/runner/theos/sdks
-          # Di chuyển các file vào đúng vị trí
           mv /Users/runner/theos/sdks/sdks-master/* /Users/runner/theos/sdks/
           rm -rf sdks.zip /Users/runner/theos/sdks/sdks-master
 
       - name: Build Dylib
         run: |
           export THEOS=/Users/runner/theos
-          # Lệnh build bỏ qua mọi cảnh báo để ra file
-          make FINALPACKAGE=1
+          # Thêm lệnh này để chắc chắn arm64e không bị lỗi
+          make FINALPACKAGE=1 ARCHS="arm64 arm64e"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
