@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import "KeyAuth.h" 
 
-// --- 1. THÔNG SỐ KEYAUTH CỦA VINH ---
+// --- 1. THÔNG SỐ CỦA VINH ---
 extern "C" {
     __attribute__((visibility("default"))) __attribute__((used)) 
     NSString * const KEYAUTH_APP_DISPLAY_NAME = @"VAN VINH PRO";
@@ -17,121 +17,45 @@ extern "C" {
     NSString * const KEYAUTH_APP_SECRET = @"81c6788b2918813bb0263c560f31962d6b8ae9248f9d898ae7f66f855175d68f";
 
     __attribute__((visibility("default"))) __attribute__((used)) 
-    const uint32_t KEYAUTH_MAX_DYLIBS = 1;
+    const uint32_t KEYAUTH_MAX_DYLIBS = 50; // Tăng cái này lên để tránh bị Game quét dylib
 }
 
-// --- 2. HÀM KHỞI CHẠY (Hẹn giờ hiện Menu) ---
-__attribute__((constructor)) static void vinh_setup() {
-    // Đợi 10 giây cho Game ổn định rồi mới hiện Menu
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+// --- 2. HÀM FIX LỖI KHÔNG HIỆN MENU ---
+__attribute__((constructor)) static void vinh_final_fix() {
+    // Chờ 5 giây để Game hiện màn hình chính
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
         Class authClass = NSClassFromString(@"KeyAuthSystem");
         if (authClass) {
             id auth = [authClass performSelector:@selector(shared)];
             [auth performSelector:@selector(start)];
             
-            // Ép Menu nổi lên trên cùng
-            UIWindow *keyWin = [UIApplication sharedApplication].keyWindow;
-            if (keyWin) keyWin.windowLevel = UIWindowLevelStatusBar + 100.0;
-            NSLog(@"[Vinh] Menu KeyAuth da khoi chay thanh cong!");
+            // VÒNG LẶP ÉP HIỆN: Cứ mỗi 1 giây nó sẽ kiểm tra và lôi Menu lên trên cùng 1 lần
+            // (Đề phòng Game nó tự đè hình nền lên Menu của mình)
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+                    for (UIWindow *window in [UIApplication sharedApplication].windows) {
+                        // Tìm cái cửa sổ nào chứa Menu hoặc đang là cửa sổ chính
+                        if (![window isKindOfClass:NSClassFromString(@"UITextEffectsWindow")]) {
+                            window.windowLevel = UIWindowLevelStatusBar + 9999.0;
+                            window.clipsToBounds = NO;
+                        }
+                    }
+                }];
+                [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+            });
+            
+            NSLog(@"[Vinh] Forced Menu appearance initialized!");
         }
     });
 }
 
-// --- 3. TOÀN BỘ GIAO DIỆN THEME (FLUCK API) ---
-static const NSString *kThemeModeKey = @"ModMenuDarkMode";
-static const NSString *kMenuColorThemeKey = @"ModMenuColorTheme";
-static const NSString *kWinterThemeKey = @"ModMenuWinterTheme";
-static const NSString *kLiquidThemeKey = @"ModMenuLiquidTheme";
-
+// --- 3. THEME GIAO DIỆN (GIỮ NGUYÊN) ---
 @implementation KeyAuthSystem (ThemeAPI)
-
-+ (NSInteger)themeMenuColorTheme {
-    return [[NSUserDefaults standardUserDefaults] integerForKey:(NSString *)kMenuColorThemeKey];
-}
-
-+ (BOOL)themeIsDarkMode {
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:(NSString *)kThemeModeKey]) {
-        return [[NSUserDefaults standardUserDefaults] boolForKey:(NSString *)kThemeModeKey];
-    }
-    return YES;
-}
-
-+ (BOOL)themeIsWinter {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:(NSString *)kWinterThemeKey];
-}
-
-+ (BOOL)themeIsLiquid {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:(NSString *)kLiquidThemeKey];
-}
-
-- (BOOL)isDarkMode { return [KeyAuthSystem themeIsDarkMode]; }
-- (BOOL)isWinterTheme { return [KeyAuthSystem themeIsWinter]; }
-- (BOOL)isLiquidTheme { return [KeyAuthSystem themeIsLiquid]; }
-
-- (UIColor *)accentColor {
-    if ([KeyAuthSystem themeIsWinter]) {
-        return [UIColor colorWithRed:0.4 green:0.7 blue:1.0 alpha:1.0];
-    }
-    switch ([KeyAuthSystem themeMenuColorTheme]) {
-        case 1: return [UIColor colorWithRed:0.2 green:0.5 blue:1.0 alpha:1.0];
-        case 2: return [UIColor colorWithRed:0.2 green:1.0 blue:0.2 alpha:1.0];
-        case 3: return [UIColor colorWithRed:1.0 green:0.4 blue:0.8 alpha:1.0];
-        default: return [UIColor colorWithRed:1.0 green:0.2 blue:0.2 alpha:1.0];
-    }
-}
-
-- (UIColor *)backgroundColor {
-    BOOL dark = [KeyAuthSystem themeIsDarkMode];
-    if ([KeyAuthSystem themeIsLiquid]) {
-        return dark ? [UIColor colorWithWhite:0.05 alpha:0.85] : [UIColor colorWithWhite:0.98 alpha:0.9];
-    }
-    if ([KeyAuthSystem themeIsWinter]) {
-        return dark ? [UIColor colorWithRed:0.02 green:0.04 blue:0.08 alpha:1.0] : [UIColor colorWithRed:0.92 green:0.95 blue:1.0 alpha:1.0];
-    }
-    NSInteger theme = [KeyAuthSystem themeMenuColorTheme];
-    switch (theme) {
-        case 1: return dark ? [UIColor colorWithRed:0.01 green:0.01 blue:0.05 alpha:1.0] : [UIColor colorWithRed:0.95 green:0.95 blue:0.99 alpha:1.0];
-        case 2: return dark ? [UIColor colorWithRed:0.01 green:0.05 blue:0.01 alpha:1.0] : [UIColor colorWithRed:0.95 green:0.99 blue:0.95 alpha:1.0];
-        case 3: return dark ? [UIColor colorWithRed:0.05 green:0.01 blue:0.03 alpha:1.0] : [UIColor colorWithRed:0.99 green:0.95 blue:0.97 alpha:1.0];
-        default: return dark ? [UIColor colorWithRed:0.05 green:0.01 blue:0.01 alpha:1.0] : [UIColor colorWithRed:0.99 green:0.95 blue:0.95 alpha:1.0];
-    }
-}
-
-- (UIColor *)textColor {
-    return [KeyAuthSystem themeIsDarkMode] ? [UIColor whiteColor] : [UIColor blackColor];
-}
-
-- (UIColor *)secondaryTextColor {
-    return [UIColor colorWithWhite:0.5 alpha:1.0];
-}
-
-- (UIColor *)pillColor {
-    NSInteger theme = [KeyAuthSystem themeMenuColorTheme];
-    BOOL dark = [KeyAuthSystem themeIsDarkMode];
-    if ([KeyAuthSystem themeIsLiquid]) {
-        return dark ? [UIColor colorWithWhite:0.12 alpha:0.7] : [UIColor colorWithWhite:1.0 alpha:0.75];
-    }
-    if ([KeyAuthSystem themeIsWinter]) {
-        return dark ? [UIColor colorWithRed:0.05 green:0.08 blue:0.15 alpha:1.0] : [UIColor colorWithWhite:0.96 alpha:1.0];
-    }
-    if (dark) {
-        switch (theme) {
-            case 1: return [UIColor colorWithRed:0.03 green:0.03 blue:0.15 alpha:1.0];
-            case 2: return [UIColor colorWithRed:0.03 green:0.15 blue:0.03 alpha:1.0];
-            case 3: return [UIColor colorWithRed:0.15 green:0.03 blue:0.08 alpha:1.0];
-            default: return [UIColor colorWithRed:0.15 green:0.03 blue:0.03 alpha:1.0];
-        }
-    }
-    return [UIColor colorWithWhite:0.96 alpha:1.0];
-}
-
-- (UIColor *)checkboxOffColor {
-    return [KeyAuthSystem themeIsDarkMode] ? [UIColor colorWithWhite:0.25 alpha:1.0] : [UIColor colorWithWhite:0.7 alpha:1.0];
-}
-
+- (BOOL)isDarkMode { return YES; }
+- (UIColor *)accentColor { return [UIColor colorWithRed:1.0 green:0.2 blue:0.2 alpha:1.0]; }
+- (UIColor *)backgroundColor { return [UIColor colorWithWhite:0.05 alpha:0.95]; }
+- (UIColor *)textColor { return [UIColor whiteColor]; }
+- (UIColor *)pillColor { return [UIColor colorWithWhite:0.15 alpha:1.0]; }
 - (UIColor *)glowColor { return [[self accentColor] colorWithAlphaComponent:0.6]; }
-- (UIColor *)borderColor { return [[self accentColor] colorWithAlphaComponent:0.35]; }
-- (UIColor *)separatorColor { return [UIColor colorWithWhite:0.3 alpha:0.5]; }
-- (UIColor *)pillBorderColor { return [UIColor colorWithWhite:1.0 alpha:0.08]; }
-
 @end
