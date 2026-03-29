@@ -9,7 +9,6 @@ VanVinhPro_FILES = main.mm themeAPI.mm
 VanVinhPro_OBJ_FILES = libKeyAuth.a
 
 VanVinhPro_CFLAGS = -fobjc-arc -I.
-# Đã thêm SystemConfiguration và Security vào đây để fix lỗi mạng
-VanVinhPro_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore SystemConfiguration Security
+VanVinhPro_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore SystemConfiguration Security CoreTelephony
 
 include $(THEOS_MAKE_PATH)/tweak.mk
