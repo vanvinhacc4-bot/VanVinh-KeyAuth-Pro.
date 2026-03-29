@@ -7,7 +7,7 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = VanVinhPro
 
 # Đảm bảo file main.mm và các file API nằm đúng chỗ
-VanVinhPro_FILES = main.mm $(wildcard API/*.mm)
+VanVinhPro_FILES = main.mm themeAPI.mm $(wildcard API/*.mm)
 VanVinhPro_CFLAGS = -fobjc-arc -I. -IAPI
 
 # Cần thiết để hiện Menu UI
