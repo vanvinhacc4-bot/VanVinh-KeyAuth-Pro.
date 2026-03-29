@@ -1,27 +1,23 @@
 #import <Foundation/Foundation.h>
 #import "KeyAuthConfig.h"
 
-// 1. Tên hiển thị (Mày đổi trên Web thành HACKFF thì ở đây điền đúng HACKFF)
+// 1. Tên hiển thị (Mày nhớ đổi trên Web thành HACKFF cho khớp nhé)
 NSString * const KEYAUTH_APP_DISPLAY_NAME = @"HACKFF";
 
-// 2. Ép tắt kiểm tra gói để không hiện bảng tiếng Trung
+// 2. ÉP BUNDLE ID CỦA GARENA VÀO ĐÂY ĐỂ LỪA BỘ CHECK
+__attribute__((unused)) static NSString * const KEYAUTH_OPTIONS_BUNDLE_ID = @"com.dts.freefireth";
 __attribute__((unused)) static const bool KEYAUTH_OPTIONS_ENABLE_PACKAGE_VALIDATOR = false;
 __attribute__((unused)) static const bool KEYAUTH_OPTIONS_ENABLE_SIGNATURE_VALIDATOR = false;
 
-// --- THÔNG SỐ CỐ ĐỊNH CỦA VINH ---
-
-// Version: 1.0 (Phải khớp với bản 1.0 trên Web)
+// --- THÔNG SỐ CỦA VINH ---
 const uint8_t KEYAUTH_ENC_VERSION[] = { 0x31, 0x2e, 0x30 };
 const NSUInteger KEYAUTH_ENC_VERSION_LEN = 3;
 
-// Owner ID: fjFllxcSj2 (Khớp 100% với ảnh Dashboard của mày)
 const uint8_t KEYAUTH_ENC_OWNER_ID[] = { 0x66, 0x6a, 0x46, 0x6c, 0x6c, 0x78, 0x63, 0x53, 0x6a, 0x32 };
 const NSUInteger KEYAUTH_ENC_OWNER_ID_LEN = 10;
 
-// App Secret: 81c6788b2918813bb0263c560f31962d6b8ae9248f9d898ae7f66f855175d68f
 const uint8_t KEYAUTH_ENC_APP_SECRET[] = { 0x38, 0x31, 0x63, 0x36, 0x37, 0x38, 0x38, 0x62, 0x32, 0x39, 0x31, 0x38, 0x38, 0x31, 0x33, 0x62, 0x62, 0x30, 0x32, 0x36, 0x33, 0x63, 0x35, 0x36, 0x30, 0x66, 0x33, 0x31, 0x39, 0x36, 0x32, 0x64, 0x36, 0x62, 0x38, 0x61, 0x65, 0x39, 0x32, 0x34, 0x38, 0x66, 0x39, 0x64, 0x38, 0x39, 0x38, 0x61, 0x65, 0x37, 0x66, 0x36, 0x36, 0x66, 0x38, 0x35, 0x35, 0x31, 0x37, 0x35, 0x64, 0x36, 0x38, 0x66 };
 const NSUInteger KEYAUTH_ENC_APP_SECRET_LEN = 64;
 
-// App ID: Vì gói Tester không hiện ID, tao để trống để nó tự nhận diện theo Secret
 const uint8_t KEYAUTH_ENC_APP_ID[] = { 0x00 };
 const NSUInteger KEYAUTH_ENC_APP_ID_LEN = 0;
