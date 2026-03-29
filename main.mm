@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import "API/KeyAuth.h"
 
-// --- 1. THÔNG SỐ CỦA VINH (GIỮ NGUYÊN) ---
+// --- 1. THÔNG SỐ KEYAUTH CỦA VINH ---
 extern "C" {
     NSString * const KEYAUTH_APP_DISPLAY_NAME = @"VAN VINH PRO";
     NSString * const KEYAUTH_APP_VERSION = @"1.0"; 
@@ -11,7 +11,7 @@ extern "C" {
     const uint32_t KEYAUTH_MAX_DYLIBS = 1;
 }
 
-// --- 2. HÀM KHỞI TẠO (ĐỂ HIỆN MENU) ---
+// --- 2. HÀM KHỞI CHẠY (Hẹn giờ hiện Menu) ---
 __attribute__((constructor)) static void vinh_setup() {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         Class authClass = NSClassFromString(@"KeyAuthSystem");
@@ -19,15 +19,15 @@ __attribute__((constructor)) static void vinh_setup() {
             id auth = [authClass performSelector:@selector(shared)];
             [auth performSelector:@selector(start)];
             
-            // Ép Menu nổi lên trên cùng
+            // Ép Menu nổi lên trên cùng (Fix lỗi bị Game che)
             UIWindow *keyWin = [UIApplication sharedApplication].keyWindow;
             if (keyWin) keyWin.windowLevel = UIWindowLevelStatusBar + 100;
-            NSLog(@"[Vinh] Menu da san sang!");
+            NSLog(@"[Vinh] Menu KeyAuth da khoi chay!");
         }
     });
 }
 
-// --- 3. TOÀN BỘ CODE GIAO DIỆN (THEME) MÀY VỪA COPY ---
+// --- 3. TOÀN BỘ GIAO DIỆN THEME (BẢN GỐC 100%) ---
 static const NSString *kThemeModeKey = @"ModMenuDarkMode";
 static const NSString *kMenuColorThemeKey = @"ModMenuColorTheme";
 static const NSString *kWinterThemeKey = @"ModMenuWinterTheme";
@@ -54,17 +54,9 @@ static const NSString *kLiquidThemeKey = @"ModMenuLiquidTheme";
     return [[NSUserDefaults standardUserDefaults] boolForKey:(NSString *)kLiquidThemeKey];
 }
 
-- (BOOL)isDarkMode {
-    return [KeyAuthSystem themeIsDarkMode];
-}
-
-- (BOOL)isWinterTheme {
-    return [KeyAuthSystem themeIsWinter];
-}
-
-- (BOOL)isLiquidTheme {
-    return [KeyAuthSystem themeIsLiquid];
-}
+- (BOOL)isDarkMode { return [KeyAuthSystem themeIsDarkMode]; }
+- (BOOL)isWinterTheme { return [KeyAuthSystem themeIsWinter]; }
+- (BOOL)isLiquidTheme { return [KeyAuthSystem themeIsLiquid]; }
 
 - (UIColor *)accentColor {
     if ([KeyAuthSystem themeIsWinter]) {
@@ -81,12 +73,28 @@ static const NSString *kLiquidThemeKey = @"ModMenuLiquidTheme";
 - (UIColor *)backgroundColor {
     BOOL dark = [KeyAuthSystem themeIsDarkMode];
     if ([KeyAuthSystem themeIsLiquid]) {
-        return dark ? [UIColor colorWithWhite:0.05 alpha:0.85] : [UIColor colorWithWhite:0.98 alpha:0.9];
+        return dark ? [UIColor colorWithWhite:0.05 alpha:0.85]
+                    : [UIColor colorWithWhite:0.98 alpha:0.9];
     }
     if ([KeyAuthSystem themeIsWinter]) {
-        return dark ? [UIColor colorWithRed:0.02 green:0.04 blue:0.08 alpha:1.0] : [UIColor colorWithRed:0.92 green:0.95 blue:1.0 alpha:1.0];
+        return dark ? [UIColor colorWithRed:0.02 green:0.04 blue:0.08 alpha:1.0]
+                    : [UIColor colorWithRed:0.92 green:0.95 blue:1.0 alpha:1.0];
     }
-    return dark ? [UIColor colorWithRed:0.05 green:0.01 blue:0.01 alpha:1.0] : [UIColor colorWithRed:0.99 green:0.95 blue:0.95 alpha:1.0];
+    NSInteger theme = [KeyAuthSystem themeMenuColorTheme];
+    switch (theme) {
+        case 1:
+            return dark ? [UIColor colorWithRed:0.01 green:0.01 blue:0.05 alpha:1.0]
+                        : [UIColor colorWithRed:0.95 green:0.95 blue:0.99 alpha:1.0];
+        case 2:
+            return dark ? [UIColor colorWithRed:0.01 green:0.05 blue:0.01 alpha:1.0]
+                        : [UIColor colorWithRed:0.95 green:0.99 blue:0.95 alpha:1.0];
+        case 3:
+            return dark ? [UIColor colorWithRed:0.05 green:0.01 blue:0.03 alpha:1.0]
+                        : [UIColor colorWithRed:0.99 green:0.95 blue:0.97 alpha:1.0];
+        default:
+            return dark ? [UIColor colorWithRed:0.05 green:0.01 blue:0.01 alpha:1.0]
+                        : [UIColor colorWithRed:0.99 green:0.95 blue:0.95 alpha:1.0];
+    }
 }
 
 - (UIColor *)textColor {
@@ -98,16 +106,36 @@ static const NSString *kLiquidThemeKey = @"ModMenuLiquidTheme";
 }
 
 - (UIColor *)pillColor {
-    return [KeyAuthSystem themeIsDarkMode] ? [UIColor colorWithRed:0.15 green:0.03 blue:0.03 alpha:1.0] : [UIColor colorWithWhite:0.96 alpha:1.0];
+    NSInteger theme = [KeyAuthSystem themeMenuColorTheme];
+    BOOL dark = [KeyAuthSystem themeIsDarkMode];
+    if ([KeyAuthSystem themeIsLiquid]) {
+        return dark ? [UIColor colorWithWhite:0.12 alpha:0.7]
+                    : [UIColor colorWithWhite:1.0 alpha:0.75];
+    }
+    if ([KeyAuthSystem themeIsWinter]) {
+        return dark ? [UIColor colorWithRed:0.05 green:0.08 blue:0.15 alpha:1.0]
+                    : [UIColor colorWithWhite:0.96 alpha:1.0];
+    }
+    if (dark) {
+        switch (theme) {
+            case 1: return [UIColor colorWithRed:0.03 green:0.03 blue:0.15 alpha:1.0];
+            case 2: return [UIColor colorWithRed:0.03 green:0.15 blue:0.03 alpha:1.0];
+            case 3: return [UIColor colorWithRed:0.15 green:0.03 blue:0.08 alpha:1.0];
+            default: return [UIColor colorWithRed:0.15 green:0.03 blue:0.03 alpha:1.0];
+        }
+    }
+    return [UIColor colorWithWhite:0.96 alpha:1.0];
 }
 
 - (UIColor *)checkboxOffColor {
-    return [KeyAuthSystem themeIsDarkMode] ? [UIColor colorWithWhite:0.25 alpha:1.0] : [UIColor colorWithWhite:0.7 alpha:1.0];
+    return [KeyAuthSystem themeIsDarkMode]
+        ? [UIColor colorWithWhite:0.25 alpha:1.0]
+        : [UIColor colorWithWhite:0.7 alpha:1.0];
 }
 
 - (UIColor *)glowColor { return [[self accentColor] colorWithAlphaComponent:0.6]; }
-- (UIColor *)borderColor { return [[self accentColor] colorWithAlphaComponent:0.3]; }
-- (UIColor *)separatorColor { return [UIColor colorWithWhite:0.3 alpha:0.5]; }
-- (UIColor *)pillBorderColor { return [UIColor colorWithWhite:1.0 alpha:0.08]; }
+- (UIColor *)borderColor { return [[self accentColor] colorWithAlphaComponent:[KeyAuthSystem themeIsDarkMode] ? 0.3 : 0.35]; }
+- (UIColor *)separatorColor { return [KeyAuthSystem themeIsDarkMode] ? [UIColor colorWithWhite:0.3 alpha:0.5] : [UIColor colorWithWhite:0.7 alpha:0.5]; }
+- (UIColor *)pillBorderColor { return [KeyAuthSystem themeIsDarkMode] ? [UIColor colorWithWhite:1.0 alpha:0.08] : [UIColor colorWithWhite:0.0 alpha:0.05]; }
 
 @end
