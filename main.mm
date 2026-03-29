@@ -1,25 +1,20 @@
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import "KeyAuthConfig.h"
 
-// --- CHỈ ĐỂ THÔNG SỐ CỦA VINH Ở ĐÂY ---
-extern "C" {
-    NSString * const KEYAUTH_APP_DISPLAY_NAME = @"VAN VINH PRO";
-    NSString * const KEYAUTH_APP_VERSION = @"1.0"; 
-    NSString * const KEYAUTH_OWNER_ID = @"fjFllxcSj2";
-    NSString * const KEYAUTH_APP_SECRET = @"81c6788b2918813bb0263c560f31962d6b8ae9248f9d898ae7f66f855175d68f";
-    __attribute__((unused)) static const uint32_t KEYAUTH_MAX_DYLIBS = 100; 
-}
+// Tên hiển thị: HACK IOS VIET NAM✅
+NSString * const KEYAUTH_APP_DISPLAY_NAME = @"HACK IOS VIET NAM✅";
 
-// --- LỆNH GỌI GIAO DIỆN HIỆN LÊN ---
-__attribute__((constructor)) static void vinh_khoi_chay() {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        Class authClass = NSClassFromString(@"KeyAuthSystem");
-        if (authClass) {
-            id sharedAuth = [authClass performSelector:@selector(shared)];
-            if (sharedAuth) {
-                [sharedAuth performSelector:@selector(start)];
-                NSLog(@"[Vinh Pro] Da goi Menu thanh cong!");
-            }
-        }
-    });
-}
+// Version: 1.0
+const uint8_t KEYAUTH_ENC_VERSION[] = { 0x31, 0x2e, 0x30 };
+const NSUInteger KEYAUTH_ENC_VERSION_LEN = 3;
+
+// Owner ID: fjFllxcSj2
+const uint8_t KEYAUTH_ENC_OWNER_ID[] = { 0x66, 0x6a, 0x46, 0x6c, 0x6c, 0x78, 0x63, 0x53, 0x6a, 0x32 };
+const NSUInteger KEYAUTH_ENC_OWNER_ID_LEN = 10;
+
+// App Secret: 81c6788b...
+const uint8_t KEYAUTH_ENC_APP_SECRET[] = { 0x38, 0x31, 0x63, 0x36, 0x37, 0x38, 0x38, 0x62, 0x32, 0x39, 0x31, 0x38, 0x38, 0x31, 0x33, 0x62, 0x62, 0x30, 0x32, 0x36, 0x33, 0x63, 0x35, 0x36, 0x30, 0x66, 0x33, 0x31, 0x39, 0x36, 0x32, 0x64, 0x36, 0x62, 0x38, 0x61, 0x65, 0x39, 0x32, 0x34, 0x38, 0x66, 0x39, 0x64, 0x38, 0x39, 0x38, 0x61, 0x65, 0x37, 0x66, 0x36, 0x36, 0x66, 0x38, 0x35, 0x35, 0x31, 0x37, 0x35, 0x64, 0x36, 0x38, 0x66 };
+const NSUInteger KEYAUTH_ENC_APP_SECRET_LEN = 64;
+
+// App ID (Nếu web không có thì để trống như này)
+const uint8_t KEYAUTH_ENC_APP_ID[] = { 0x00 };
+const NSUInteger KEYAUTH_ENC_APP_ID_LEN = 0;
