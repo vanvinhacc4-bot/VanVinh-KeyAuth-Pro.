@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "API/KeyAuth.h"
+#import "KeyAuth.h"
 #import <Foundation/Foundation.h>
 
 static const NSString *kThemeModeKey = @"ModMenuDarkMode";
